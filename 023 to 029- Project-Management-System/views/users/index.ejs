@@ -1,0 +1,190 @@
+  <% include ../partials/headers %>
+
+    <h1>ADMIN</h1>
+    <h2>Filters</h2>
+    <div class="container" style="padding-top: 20px">
+    <form action="/users" method="GET">       
+      <input type="hidden" name="page" value="1" /> 
+      <!---------Menampilkan box id------->
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"name="ckid" />
+                <label class="form-check-label">ID</label>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="form-group">
+                <input type="text" class="form-control" id="id" name="id"placeholder="ID"/>
+            </div>
+          </div>
+    </div>
+    <!---------Menampilkan box EMAIL------->
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-check">
+                <input class="form-check-input" 
+                type="checkbox" 
+                name="ckemail"
+                />Email
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="form-group">
+                <input type="email" class="form-control" id="email" name="email"placeholder="Email"/>
+            </div>
+          </div>
+    </div>
+    <!---------Menampilkan box Nama------->
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-check">
+                <input class="form-check-input" 
+                type="checkbox" 
+                name="ckname"
+                />Name
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="form-group">
+                <input type="text" class="form-control" id="name" name="name"placeholder="Name"/>
+            </div>
+          </div>
+    </div>
+    
+        <!-------Menampilkan box Type Job -------->
+        <div class="row">
+          <div class="col-sm-2">
+              <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="ckTypejob"/>TypeJob
+              </div>
+          </div>
+          <div class="col-sm-5">
+            
+            <div class="form-group">                    
+              <select class="form-control" name="Typejob">
+                <option value="">Choose the TypeJob..</option>
+                
+                <option value="true" <%= query.type == "true" ? ' selected': ''%>>Fulltime</option>
+                <option value="false" <%= query.type == "false" ? ' selected': '' %>>Parttime</option> 
+                                  
+                  </select>
+              </div>
+            </div>
+        </div>
+        <!-------Menampilkan box Role -------->
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="ckRole"/>Role
+                </div>
+            </div>
+            <div class="col-sm-5">
+              
+              <div class="form-group">                    
+                <select class="form-control" name="Role">
+                  <option>Choose the Position</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Programmer">Programmer</option>
+                  <option value="Quality Assurance">Quality Assurance</option>
+                                    
+                    </select>
+                </div>
+              </div>
+          </div>
+            <button type="submit" class="btn btn-primary" style="border-radius: 20px;">Search</button>
+          
+          <button a href="/users" type="submit" class="btn btn-success" style="border-radius: 20px;">Reset</button>
+          
+        </div>
+            
+          </div>
+        </form>
+
+        <!---------Menampilkan box Column checkbox------->
+
+          <h1>Options</h1>
+
+          <form action="/users/option" method="POST">
+            <div class="container">
+              <div class="row">
+                <div class="col-sm-2">
+                  <p>Columns</p>
+                </div>
+                
+                <div class="col-sm-2">
+                        <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck1" name="idChecked" value="true" <%= option.idChecked== "true" ? ' checked': '' %>>
+                        <label class="custom-control-label" for="customCheck1" >ID </label>
+                        </div>
+                  
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="customCheck2" name="emailChecked" value="true" <%= option.emailChecked== "true" ? ' checked': '' %> >
+                          <label class="custom-control-label" for="customCheck2" >Email </label>                        
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="customCheck3" name="nameChecked" value="true" <%= option.nameChecked== "true" ? ' checked': '' %> >
+                            <label class="custom-control-label" for="customCheck3">Name </label>                        
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="customCheck4" name="typejobChecked" value="true" <%= option.typejobChecked== "true" ? ' checked': '' %> >
+                          <label class="custom-control-label" for="customCheck4">TypeJob </label>                        
+                      </div>
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck5" name="rolesChecked" value="true" <%= option.rolesChecked== "true" ? ' checked': '' %> >
+                        <label class="custom-control-label" for="customCheck5">Roles </label>                        
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-success" style="border-radius: 20px; margin-bottom: 20px;">Apply</button>
+          </form>   
+          <!-- <a class="btn btn-danger" style="border-radius: 10px;" href="/projects/update">update</a> -->
+       
+        <!---------Menampilkan box Tabel------->
+      <div>
+        <table class="table table-striped" border="1">
+          <thead>
+            <tr>
+              <% if( option.idChecked == "true") { %> <th scope="col">#</th> <%}%>
+              <% if( option.emailChecked == "true" ) { %><th scope="col">Email</th><%}%>
+              <% if( option.nameChecked == "true" ) { %><th scope="col">Name</th><%}%>
+              <% if( option.typejobChecked == "true" ) { %><th scope="col">TypeJob</th><%}%>
+              <% if( option.rolesChecked == "true" ) { %><th scope="col">Roles</th><%}%>
+                <th scope="col">Action</th>
+
+            </tr>  
+          </thead>
+          <tbody>
+            <% user.forEach(user => { %>
+              <tr>
+                <% if( option.idChecked) { %>   <td><%=user.userid %></td> <%}%>
+                <% if( option.emailChecked) { %> <td><%=user.email %></td> <%}%>
+                <% if( option.nameChecked) { %> <td><%=user.firstname +' '+user.lastname %></td> <%}%>
+                <% if( option.typejobChecked){%> <td><%=user.typejob %></td> <%}%>
+                <% if( option.rolesChecked) {%> <td><%=user.roles %></td> <%}%>
+                  <td><a class="btn btn-success" style="border-radius: 15px;" href="/users/editUser/<%=user.userid%>">Edit</a>
+                      <a class="btn btn-danger" style="border-radius: 10px; color: white" onclick="return confirm('Delete ?')" href="/users/deleteUser/<%=user.userid %>">Delete</a>
+                  </td>
+              </tr>
+           <% });%>
+            
+          </tbody>
+        </table>
+        </div>
+        
+
+        <a class="btn btn-primary" style="border-radius: 20px;" href="/users/addUser">ADD</a>
+    </div>
+</div>
+
+</form>
+
+    <!-- Optional JavaScript -->
+    <!-- jquery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+ 
+    <% include ../partials/footers %>

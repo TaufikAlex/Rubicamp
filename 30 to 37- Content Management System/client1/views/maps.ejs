@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+
+    <% include partials/headers %>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="container" style="margin-top: 10%">
+        <div class="col-auto my-1">
+          <button type="submit" class="btn btn-primary" id="btn-add">
+            <i class="fa fa-plus "></i> Add
+          </button>
+        </div>
+
+        <div
+          id="div-add"
+          class="panel panel-default mt-3 mb-3"
+          style="display:none"
+        >
+          <div class="panel-body">
+            <form class="form-inline" id="form-add">
+              <h3></h3>
+              <input type="hidden" id="id" value="" />
+              <div class="form-group">
+                <label for="tittle" class="text-left">Tittle</label>
+                <input
+                  type="text"
+                  class="form-control ml-3"
+                  id="tittle"
+                  placeholder="A"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="lat" class="ml-3">lat</label>
+                <input
+                  type="text"
+                  class="form-control ml-3"
+                  id="lat"
+                  placeholder="0.0"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="lng" class="ml-3">lng</label>
+                <input
+                  type="text"
+                  class="form-control ml-3"
+                  id="lng"
+                  placeholder="0.0"
+                  required
+                />
+              </div>
+              <button type="submit" id="btn-save" class="btn btn-success ml-3">
+                <span class="glyphicon glyphicon-save">Save</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <h3>Search</h3>
+        <hr />
+        <form class="col-md-10">
+          <div class="form-row align-items-center">
+            <div class="col-sm-5 my-1">
+              <label class="sr-only" for="inlineFormInputName">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="Stittle"
+                placeholder="Tittle"
+              />
+            </div>
+        </form>
+      </div>
+      <div class="container">
+        <table class="table table-striped mt-5">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Tittle</th>
+              <th scope="col">Lat</th>
+              <th scope="col">lng</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    const apiUrl = `http://localhost:4000/api/maps`;
+
+    $("#btn-add").click(() => {
+      $("#div-add").toggle();
+    });
+
+    $("document").ready(() => {
+      auth(localStorage.getItem("token"))
+      loadData();
+
+      $("#form-add").submit(e => {
+        e.preventDefault();
+        if ($("#id").val() == "") {
+          addData();
+          
+          $("#div-add").hide();
+        } else {
+          editData();
+          $("#div-add").hide();
+        }
+        $("#id").val("");
+      });
+    });
+
+    const loadData = () => {
+      $.ajax({
+        url: `${apiUrl}`,
+        method: "GET",
+        dataType: "json"
+      })
+        .done(response => {
+          let html = "";
+          response.forEach((item, index) => {
+            html += `<tr>
+                        <th scope="col">${index + 1}</th>
+                        <td scope="col">${item.tittle}</td>
+                        <td scope="col">${item.lat}</td>
+                        <td scope="col">${item.lng}</td>
+                        <td scope="col">
+                            <button class="btn btn-edit btn-success" data-target='${JSON.stringify(
+                              item
+                            )}' type="button"> edit</button>
+                            <button  class="btn btn-delete btn-danger" type="button" data-target='${
+                              item._id
+                            }'> delete</button>    
+                        </td>
+                            
+                    </tr>`;
+          });
+          $("table tbody").html(html);
+        })
+        .fail(e => {
+          console.log(e);
+        });
+    };
+//========================add data============
+//adddata
+    const addData = () => {
+      let tittle = $("#tittle").val().toUpperCase();
+      let lat = $("#lat").val();
+      let lng = $("#lng").val();
+      console.log(tittle, lat);
+
+      $.ajax({
+        url: `${apiUrl}`,
+        method: "POST",
+        data: {
+          tittle: tittle,
+          lat: lat,
+          lng: lng
+        }
+      })
+        .done(response => {
+          loadData();
+        })
+        .fail(e => {
+          console.log(e);
+        });
+    };
+//=======================
+//deleted data
+    $("table tbody").on("click", ".btn-delete", el => {
+      var r = confirm("Are u sure Deleted!");
+      if (r == true) {
+      deleteData(el.currentTarget.attributes["data-target"].nodeValue);
+      }
+    });
+
+    const deleteData = id => {
+      let tittle = $("#tittle").val();
+      let lat = $("#lat").val();
+      let lng = $("#lng").val();
+
+      $.ajax({
+        url: `${apiUrl}/${id}`,
+        method: "DELETE"
+      }).done(response => {
+        loadData();
+      });
+    };
+//=================================
+//edit data
+    const editData = () => {
+      let id = $("#id").val();
+      let tittle = $("#tittle").val();
+      let lat = $("#lat").val();
+
+      $.ajax({
+        url: `${apiUrl}/${id}`,
+        method: "PUT",
+        data: {
+          tittle: tittle,
+          lat: lat,
+          lng: lng
+        }
+      }).done(response => {
+        loadData();
+      });
+    };
+
+    $("table tbody").on("click", ".btn-edit", el => {
+      $("#div-add").show();
+      let item = JSON.parse(
+        el.currentTarget.attributes["data-target"].nodeValue
+      );
+      $("#tittle").val(item.tittle);
+      $("#lat").val(item.lat);
+      $("#lng").val(item.lng);
+      $("#id").val(item._id);
+      editData();
+    });
+
+    $("#Stittle").keyup(function() {
+      searchData();
+    });
+   
+//================================================
+// Search data
+    const searchData = () => {
+      let tittle = $("#Stittle").val().toUpperCase();
+      console.log(tittle);
+
+      if (tittle || lat) {
+        $.ajax({
+          url: `${apiUrl}/search`,
+          method: "POST",
+          data: {
+            tittle
+          }
+        }).done(res => {
+          let html = "";
+          res.forEach((item, index) => {
+            html += `<tr>
+                        <th scope="col">${index + 1}</th>
+                        <td scope="col">${item.tittle}</td>
+                        <td scope="col">${item.lat}</td>
+                        <td scope="col">${item.lng}</td>
+                        <td scope="col">
+                            <button class="btn btn-edit btn-success" data-target='${JSON.stringify(
+                              item
+                            )}' type="button"> edit</button>
+                            <button  class="btn btn-delete btn-danger" type="button" data-target='${
+                              item._id
+                            }'> delete</button>    
+                        </td>   
+                    </tr>`;
+          });
+          $("table tbody").html(html);
+        });
+      } else {
+        loadData();
+      }
+    };
+
+    const apiUrlusers = `http://localhost:4000/api/users/check`;
+    const auth = () => {
+      $.ajax ({
+        url : apiUrlusers,
+        method: "POST",
+        data: {
+          token: localStorage.getItem("token")
+        }
+      }).done((data) =>{
+        if(!data.valid){
+          window.location="/"
+        }
+      })
+    }
+  </script>
+</html>

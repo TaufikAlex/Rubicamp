@@ -4,14 +4,9 @@ var PhoneBook = require('../models/users')
 
 
 router.get('/', function (req, res, next) {
-  let response = {
-    idUser: '',
-    name: '',
-    phone: ''
-  }
   PhoneBook.find().then(data => {
     res.status(200).json(data)
-  }).catch(err => {
+  }).catch(() => {
     res.status(401).json({
       message: 'data not found'
     })
@@ -21,44 +16,30 @@ router.get('/', function (req, res, next) {
 
 router.post('/', (req, res, next) => {
 
-  console.log('req Body > ', req.body);
-  
-  PhoneBook.create({
-    idUser: req.body.idUser,
-    name: req.body.name,
-    phone: req.body.phone
+  const { idUser, name, phone } = req.body;
+  let response = {
+    status: true,
+    message: 'data have been added',
+    data: null
+  }
+  let phoneBook = new PhoneBook({ idUser, name, phone })
+
+  phoneBook.save().then(data => {
+    res.status(200).json(
+      data
+    )
+  }).catch(err => {
+    response.status = false,
+      response.message = 'can not add'
   })
-    .then(data => {
-      res.status(200).json({
-        status: "SUCCESS",
-        RESPONSE: {
-          idUser: data.idUser,
-          name: data.name,
-          phone: data.phone
-        }
-        
-      })
-        .catch(err => {
-          res.status(401).json({
-            status: "NOT FOUND",
-            RESPONSE: {
-              idUser:'',
-              name: '',
-              phone: ''
-            }
-          })
-        })
-    })
 })
 
 
 router.put('/:id', (req, res) => {
 
-  console.log('data request >', req.body);
-  
   PhoneBook.findOneAndUpdate(
     { idUser: req.params.id },
-    { name: req.body.name, numberPhone: req.body.numberPhone }, { new: true }
+    { name: req.body.name, phone: req.body.phone }, { new: true }
   ).then(data => {
     res.status(201).json({
       success: true,
@@ -79,7 +60,6 @@ router.delete('/:id', (req, res) => {
     idUser: req.params.id
   })
     .then(data => {
-      console.log('this >>', data)
       res.status(200).json({
         status: 'SUCCESS',
         data
